@@ -17,7 +17,7 @@ async function query(sql: string, values?: any): Promise<any> {
   }
 }
 
-//CRUD BEGINS HERE :)
+//CRUD BEGINS HERE
 // READING OUR DATA
 // Example of using the query function to SELECT all items from the ‘customers’ table
 async function getAllCustomers(): Promise<any> {

@@ -17,28 +17,24 @@ app.get('/', (req, res) => {
     });
 });
 app.post('/customers', (req, res) => {
-    const customer = req.body;
-    connection.query('INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit) VALUES (520, `Mariah Teasdale`, `Teasdale`, `Mariah`, `980-269-9935`, `1580 Burke Duncan Road`, `NULL`, `Lancaster`, `South Carolina`, `29720`, `United States`, `897345`, `10400.94`)', customer, function (error, results) {
-        if (error) {
-            res.status(500).send(error);
-        } else {
-            res.send(results);
+    try {
+        const customer = req.body;
+        if (!customer.customerName || !customer.contactLastName || !customer.phone) {
+            return res.status(400).send({ error: 'Invalid customer data' });
         }
-    });
+        connection.query('INSERT INTO customers SET ?', customer, function (error, results) {
+            if (error) {
+                res.status(500).send(error);
+            } else {
+                res.send(results);
+            }
+        });
+    } catch (error) {
+        res.status(500).send({ error: 'Error inserting customer' });
+    }
 });
+
 app.use(express.json());
 app.listen(port, function () {
     console.log("Listing on port ".concat(port));
 });
-
-
-
-
-
-
-
-
-
-
-
-
