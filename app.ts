@@ -48,6 +48,7 @@ connect.query(
     }
   }
 );
+// DELETE 
 connect.query(
     "DELETE FROM customers WHERE customerName = 'V2 Otaku!' WHERE customerNumber = 497",
     (error, results) => {
@@ -62,4 +63,6 @@ app.listen(8000, () => {
   console.log("Server listening on port 8000");
 });
 
+// CRUD IS DONE :) 
+// I HATED THIS :) 
 
