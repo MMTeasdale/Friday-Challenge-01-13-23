@@ -1,47 +1,65 @@
-import mysql from 'mysql';
-// Create a connection pool
-const pool = mysql.createPool({
-  host: '127.0.0.1',
-  user: 'Mariah',
-  password: 'LunaNiver14',
-  database: 'classicmodels'
+import * as mysql from "mysql";
+const express = require("express");
+const app = express();
+const axios = require("axios");
+const connect = mysql.createConnection({
+  host: "127.0.0.1",
+  user: "Mariah",
+  password: "LunaNiver14",
+  database: "classicmodels",
 });
-// Function to execute a query and return the result
-async function query(sql: string, values?: any): Promise<any> {
-  const conn = await pool.getConnection();
-  try {
-    const [rows] = await conn.execute(sql, values);
-    return rows;
-  } finally {
-    conn.release();
+connect.connect((err) => {
+  if (err) {
+    throw err;
+  } else {
+    console.log("connected to database :)");
   }
-}
-
-//CRUD BEGINS HERE
-// READING OUR DATA
-// Example of using the query function to SELECT all items from the ‘customers’ table
-async function getAllCustomers(): Promise<any> {
-  const sql = 'SELECT * FROM customers';
-  return await query(sql);
-}
-// CREATING NEW DATA
-// Example of using the query function to INSERT a new item into the ‘customers’ table
-async function insertCustomers(customers: any): Promise<void> {
-  const sql = 'INSERT INTO customers SET ?';
-  await query(sql, customers);
-}
-// UPDATING OUR DATA
-// Example of using the query function to UPDATE an existing item in the ‘customers’ table
-async function updateCustomers(customerNumber: number, updates: any): Promise<void> {
-  const sql = 'UPDATE customers SET ? WHERE customerName = ?';
-  await query(sql, [updates, customerNumber]);
-}
-// DELETING OUR DATA 
-// Example of using the query function to DELETE an existing item in the ‘customers’ table
-async function deleteItem(customerNumber: number): Promise<void> {
-  const sql = 'DELETE FROM customers WHERE id = ?';
-  await query(sql, customerNumber);
-}
-
+});
+//READ OPERATION:
+//Displays all the customers: In this endpoint
+app.get("/", (req: any, res: any) => {
+  connect.query("SELECT * FROM customers", (error, results) => {
+    if (error) {
+      res.status(500).send({ message: "Error fetching customers" });
+    } else {
+      res.status(200).send(results);
+    }
+  });
+});
+//CREATE OPERATION
+connect.query(
+  "INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, city, country) VALUES (497, 'Otaku!', 'Teasdale', 'Mariah', '123-456-7890', '123 R2H St.', 'Fort Mill', 'USA')",
+  (error, results) => {
+    if (error) {
+      console.error(`Error inserting record: ${error.message}`);
+    } else {
+      console.log("Record inserted successfully!");
+    }
+  }
+);
+//UPDATE OPERATION:
+connect.query(
+  "UPDATE customers SET customerName = 'V2 Otaku!' WHERE customerNumber = 497",
+  (error, results) => {
+    if (error) {
+      console.error(`Error updating record: ${error.message}`);
+    } else {
+      console.log("Record updated successfully!");
+    }
+  }
+);
+connect.query(
+    "DELETE FROM customers WHERE customerName = 'V2 Otaku!' WHERE customerNumber = 497",
+    (error, results) => {
+      if (error) {
+        console.error(`Error deleting record: ${error.message}`);
+      } else {
+        console.log("Record deleted successfully!");
+      }
+    }
+  );
+app.listen(8000, () => {
+  console.log("Server listening on port 8000");
+});
 
 
